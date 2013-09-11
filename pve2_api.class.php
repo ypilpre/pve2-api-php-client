@@ -379,8 +379,43 @@ class PVE2_API {
 
 
         }
+        
+        /*
+        Get all templates from all storage for a specific nodes
+        Can be useful for populating a list
+        
+        TODO : Avoid redundant info in case of a cluster with Shared storage
+        */
 
-
+	public function list_templates_from_storage($node) {
+        if (!$this->constructor_success) {
+                        return false;
+                }
+       
+        $storage_list = $this->pve_action("/nodes/".$node."/storage","GET");
+        if  (count($storage_list)>0){
+        //Check if Storage got the template flag
+            $storage_templates=array();
+            foreach ($storage_list as $storage) {
+                if  (strpos($storage['content'],"vztmpl")){
+                    $storage_content = $this->pve_action("/nodes/".$node."/storage/".$storage['storage']."/content","GET");
+                        if  (count($storage_content)>0){
+                                        foreach ($storage_content as $template) {
+                                           if  ($template["content"]=="vztmpl"){
+                                            array_push($storage_templates,$template['volid']); 
+                                           }
+                                     }                       
+                        }      
+                }         
+           $this->pve_storage_template_list= $storage_templates;                                     }
+        unset( $storage_templates);
+          return $this->pve_storage_template_list;    
+        }  else {
+        return false;    
+        }
+        
+     
+        }
 	
 
 	/*
