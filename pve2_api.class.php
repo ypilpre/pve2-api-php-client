@@ -387,7 +387,7 @@ class PVE2_API {
         TODO : Avoid redundant info in case of a cluster with Shared storage
         */
 
-	public function list_templates_from_storage($node) {
+	public function get_templates_from_node($node) {
         if (!$this->constructor_success) {
                         return false;
                 }
